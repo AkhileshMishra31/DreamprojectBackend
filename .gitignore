@@ -1,0 +1,145 @@
+# Node modules
+node_modules/
+
+# TypeScript compiled files
+dist/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+
+# Mac system files
+.DS_Store
+
+# Typescript
+*.tsbuildinfo
+
+# Debugging and IDE settings
+.vscode/
+.idea/
+*.swp
+
+# npm
+package-lock.json
+yarn.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Ignore artifacts and other output
+*.tmp
+*.temp
+*.log
+
+# Miscellaneous
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Binaries for ClojureScript
+*.jar
+*.cljs.cache
+
+# Webstorm files
+.idea/
+.idea_modules/
+
+# JetBrains files
+*.iml
+*.iws
+
+# S3
+s3.log
+
+# Temporary files created by processes
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# dotenv environment variables file
+.env
+
+# dotenv environment variables file for development
+.env.development.local
+.env.test.local
+.env.production.local
+
+# dotenv environment variables file for production
+.env.production
+
+# Ignore application configuration files
+appconfig.json
+
+# Ignore typedoc
+documentation/
+
+# Ignore test coverage files
+coverage/
+
+# Ignore build directories
+dist/
+build/
+
+# Ignore npm debug files
+npm-debug.log*
+
+# Yarn Integrity file
+.yarn-integrity
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Storybook files
+.storybook/
+
+# Uncomment if you have task/runner directories
+# /tasks
+# /tasks-reports
+
+# IDEs and editors
+.idea
+*.sublime-project
+*.sublime-workspace
+.vscode
+*.code-workspace
+
+# Optional ESLint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Output of 'npm pack'
+*.tgz
+
+# Optional REPL history
+.node_repl_history
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+UserInterfaceState*.txt
