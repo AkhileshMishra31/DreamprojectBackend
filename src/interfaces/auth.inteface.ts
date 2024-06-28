@@ -1,4 +1,4 @@
-export interface Iuser {
+interface Iuser {
   id: number;
   username: string;
   email: string;
@@ -11,9 +11,17 @@ export interface Iuser {
   referredBy?: string | null; // Optional field
 }
 
-export interface LoginParams {
+interface LoginParams {
   email?: string;
   password: string;
   username?: string;
 }
+
+interface LoginCredentialsData {
+  loginSession: string;
+  email: string;
+}
+
+
+export { Iuser, LoginParams, LoginCredentialsData };
 

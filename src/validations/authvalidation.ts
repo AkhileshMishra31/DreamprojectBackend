@@ -67,7 +67,7 @@ export const SignupValidation = (value: any) => {
 };
 
 
-export const logInSessionValidation = (value:any) => {
+export const logInSessionValidation = (value: any) => {
 
     const registrationSchema = Joi.object({
         username: Joi.string().alphanum().min(3).max(30)
@@ -91,11 +91,34 @@ export const logInSessionValidation = (value:any) => {
                 'any.required': 'Password is required'
             })
     }).xor('username', 'email')
-    .messages({
-        'object.missing': 'Either username or email is required'
-    });
+        .messages({
+            'object.missing': 'Either username or email is required'
+        });
 
     const result = registrationSchema.validate(value, { abortEarly: false });
+    return result;
+};
+
+
+export const LoginValidation = (value: any) => {
+    const loginSchema = Joi.object({
+        loginSession: Joi.string().required()
+            .messages({
+                'string.base': 'Login session should be a valid string',
+                'string.empty': 'Login session is required'
+            }),
+        email: Joi.string().email()
+            .messages({
+                'string.base': 'Email should be a valid string',
+                'string.empty': 'Email is required',
+                'string.email': 'Email must be a valid email address'
+            })
+    }).and('loginSession', 'email')
+        .messages({
+            'object.and': 'Both login session and email are required'
+        });
+
+    const result = loginSchema.validate(value, { abortEarly: false });
     return result;
 };
 

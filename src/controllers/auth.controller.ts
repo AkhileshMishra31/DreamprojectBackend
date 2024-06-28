@@ -5,7 +5,7 @@ import { auth_service } from '../services/auth.service';
 import { catchAsync } from '../middlewares/applymiddleware';
 // import SignupValidation from '../validations/authvalidation';
 import { AppError } from '../util/AppError';
-import { SignupValidation, logInSessionValidation } from '../validations/authvalidation';
+import { LoginValidation, SignupValidation, logInSessionValidation } from '../validations/authvalidation';
 
 
 export const signup = async (req: Request, res: Response) => {
@@ -29,19 +29,27 @@ const loginSession = async (req: Request, res: Response) => {
     if (error) {
         throw new AppError(error.message, 400)
     }
-    // const loginSession= await 
-    
+    const loginSession = await auth_service.loginSession(value);
+
+    return res.json({
+        success: true,
+        data: loginSession
+    })
+
 }
 
-// export const getOneUser = async (req: Request, res: Response) => {
-//     const userId = req.params.userId;
-
-//     const user = await auth_service.getOneUser(userId);
-//     res.json(user);
-// };
+export const login = async (req: Request, res: Response) => {
+    const { value, error } = LoginValidation(req.body)
+    if (error) {
+        throw new AppError(error.message, 400)
+    }
+    const user = await auth_service.login(value);
+    res.json(user);
+};
 
 export const auth_controller = {
     signup: catchAsync(signup),
-    loginSession: catchAsync(loginSession)
+    loginSession: catchAsync(loginSession),
+    login: catchAsync(login)
 };
 

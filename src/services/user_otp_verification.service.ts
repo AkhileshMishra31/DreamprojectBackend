@@ -51,33 +51,42 @@ export const emailOtpverification = async (value: EmailVerificationPayload) => {
         throw new AppError("this otp is expired", 400)
     }
 
-    if(value.type !=user_otp_details.verification_type){
+    if (value.type != user_otp_details.verification_type) {
         throw new AppError("this otp is not valid", 400)
     }
 
-    const verification_details=await UserOTPVerification.update({
-        where:{
-            id:user.id
+    const verification_details = await UserOTPVerification.update({
+        where: {
+            id: user.id
         },
-        data:{
-           is_email_verified:true,
-           verification_code:undefined,
-           verification_code_at:undefined,
-           email_verified_at:new Date(),
-           verification_type:undefined
+        data: {
+            is_email_verified: true,
+            verification_code: undefined,
+            verification_code_at: undefined,
+            email_verified_at: new Date(),
+            verification_type: undefined
         }
     })
-
-
-    return{
+    return {
         ...verification_details
     }
 
 }
 
+const getOtpverificationInfo=async(user_id:number)=>{
+      const otp_details= await UserOTPVerification.findFirst({
+         where:{
+            userId:user_id
+         }
+      })
+
+      return otp_details
+}
+
 export const user_otp_service = {
     generateVerificationOtponSignup,
-    emailOtpverification
+    emailOtpverification,
+    getOtpverificationInfo
 };
 
 

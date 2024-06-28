@@ -1,12 +1,14 @@
 // src/services/userService.ts
 
 import { Prisma } from "@prisma/client";
-import { Iuser, LoginParams } from "../interfaces/auth.inteface";
+import { Iuser,LoginCredentialsData,LoginParams } from "../interfaces/auth.inteface";
 import prisma from "../util/db";
 import { AppError } from "../util/AppError";
-import { generateOTP, generateReferralCode, generateSessionString, hashPassword, verifyPassword } from "../util/common";
+import { generateAccessToken, generateOTP, generateReferralCode, generateRefreshToken, generateSessionString, hashPassword, verifyPassword } from "../util/common";
 import { user_otp_service } from "./user_otp_verification.service";
 import { UserOTPVerification, VerificationType } from "../interfaces/common";
+import { user_service } from "./user.service";
+import { getLoginSessionStatus } from "./login_session.service";
 
 const { user: User } = prisma
 
@@ -111,7 +113,6 @@ export const signup = async (user_data: Iuser) => {
     }
 };
 
-
 export const loginSession = async ({ email, password, username }: LoginParams) => {
     // Your logic to fetch a single user
     const user = await User.findFirst({ where: { email: email } })
@@ -166,7 +167,7 @@ export const loginSession = async ({ email, password, username }: LoginParams) =
     }
 
     // create login session and 
-    let session= generateSessionString()
+    let session = generateSessionString()
     const loginSession = await prisma.userLoginSession.create({
         data: {
             userId: user.id,
@@ -186,9 +187,83 @@ export const loginSession = async ({ email, password, username }: LoginParams) =
     }
 };
 
+export const login = async (value: LoginCredentialsData) => {
+    const { email, loginSession } = value
+    const user = await user_service.findUser(email)
+    if (!user) { throw new AppError("no user is found", 403) }
+
+    // check for isemail_verified
+    let user_email_status = await user_otp_service.getOtpverificationInfo(user.id)
+    if (!user_email_status) {
+        throw new AppError("something went wrong please Contact us", 400)
+    }
+
+    if (!user_email_status.is_email_verified) {
+        throw new AppError("Unauthorized Session", 400)
+    }
+
+    const login_session = await getLoginSessionStatus(loginSession)
+
+    if (!login_session) {
+        throw new AppError("Unauthorized Session", 400)
+    }
+
+    if (user.id != login_session.userId) {
+        throw new AppError("Unauthorized Session", 400)
+    }
+
+    if (loginSession !== login_session.session) {
+        throw new AppError("Provided session is wrong", 400)
+    }
+
+    // dlete login sesiion
+    await prisma.userLoginSession.delete({
+        where: {
+            userId: user.id,
+            session: loginSession
+        }
+    })
+
+    await prisma.userOTPVerification.update({
+        where: {
+            id: user_email_status.id
+        },
+        data: {
+            is_logged_in_verified: true,
+            login_verified_at: new Date()
+        }
+    })
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 2); // Set expiration 2 days ahead
+    await prisma.refreshToken.create({
+        data: {
+            userId: user.id,
+            token: refreshToken,
+            expiresAt: expiresAt
+        }
+    })
+    return {
+        username: user.username,
+        email: user.email,
+        accessToken: accessToken,
+        refreshToken: refreshToken
+    }
+
+}
+
+export const logout=async()=>{
+    
+}
+
+
+
 export const auth_service = {
     signup,
-    loginSession
+    loginSession,
+    login
 };
 
 
